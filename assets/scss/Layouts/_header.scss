@@ -1,6 +1,6 @@
 header {
     background-color: black;
-    position: fixed;
+    // position: fixed;
     width: 100%;
     padding: 0 20px;
     nav {
@@ -68,7 +68,6 @@ $gray-1200: #131314;
 }
 
 body {
-	background: linear-gradient(145deg, #4dc0e3, darken(#4dc0e3, 30%));
 	font-family: "Montserrat", sans-serif;
 	min-height: 100vh;
 	margin: 0;

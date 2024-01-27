@@ -1,4 +1,4 @@
-function Products(id, name, price, screen, backCamera, frontCamera, img, desc, type ) {
+function Products(name, price, screen, backCamera, frontCamera, img, desc, type ) {
     this.name = name;
     this.price = price;
     this.screen = screen;

@@ -12,7 +12,6 @@ html, body {
 
 header {
   background-color: black;
-  position: fixed;
   width: 100%;
   padding: 0 20px;
 }
@@ -29,7 +28,6 @@ header nav i {
 }
 
 body {
-  background: linear-gradient(145deg, #4dc0e3, #156982);
   font-family: "Montserrat", sans-serif;
   min-height: 100vh;
   margin: 0;
@@ -481,7 +479,6 @@ body.show-sidebar-cart #sidebar-cart {
 
 .products {
   background-color: rgb(255, 255, 255);
-  height: 100vh;
   display: flex;
   align-items: center;
 }

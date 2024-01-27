@@ -14,4 +14,34 @@ function Services () {
             method: "GET"
         })
     }
+
+    this.addPrd = (payLoad) => {
+        return axios({
+            url: this.baseUrl,
+            method: "POST",
+            data: payLoad,
+        })
+    }
+
+    this.deletePrd = (prdID) => {
+        return axios({
+            url: `${this.baseUrl}/${prdID}`,
+            method: "DELETE",
+        })
+    }
+
+    this.getPrdDetailById = (prdID) => {
+        return axios({
+            url: `${this.baseUrl}/${prdID}`,
+            method: "GET",
+        })
+    }
+
+    this.editPrd = (prdID, payLoad) => {
+        return axios({
+            url: `${this.baseUrl}/${prdID}`,
+            method: "PUT",
+            data: payLoad
+        })
+    }
 }
