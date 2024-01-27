@@ -2,9 +2,10 @@ function getEle(id) {
   return document.getElementById(id);
 }
 var services = new Services();
+var validation = new Validation();
 var productList;
 //get product from input
-function getProductFromInput() {
+function getProductFromInput(isAdd) {
   var name = getEle("name").value;
   var price = getEle("price").value;
   var screen = getEle("screen").value;
@@ -13,6 +14,29 @@ function getProductFromInput() {
   var image = getEle("image").value;
   var desc = getEle("description").value;
   var type = getEle("type").value;
+
+  var isValid = true;
+  // debugger;
+  if (isAdd) {
+    isValid &= validation.checkNull(
+      name,
+      "tbName",
+      "Please enter name in the designated field"
+    );
+  }
+
+  isValid &= validation.checkNull(price, "tbPrice", "Please enter price in the designated field ") &&
+  validation.checkPattern(price, "tbPrice", "Please enter price is number", /^[0-9]+$/);
+  isValid &= validation.checkNull(screen, "tbScreen", "Please enter screen in the designated field ");
+  isValid &= validation.checkNull(backCamera, "tbBackCamera", "Please enter back camera in the designated field ");
+  isValid &= validation.checkNull(frontCamera, "tbFrontCamera", "Please enter front camera in the designated field ");
+  isValid &= validation.checkNull(image, "tbImage", "Please enter image url in the designated field ");
+  isValid &= validation.checkNull(desc, "tbDesc", "Please enter description in the designated field ");
+  isValid &= validation.checkType("type", "tbType", "Please enter type in the designated field ")
+
+  if (!isValid) {
+    return null;
+  }
 
   var product = new Products(
     name,
@@ -30,17 +54,19 @@ function getProductFromInput() {
 
 //render product from input to screen
 function renderProductFromInput() {
-  var product = getProductFromInput();
+  var product = getProductFromInput(true);
 
-  var promise = services.addPrd(product);
+  if (product) {
+    var promise = services.addPrd(product);
 
-  promise.then(() => {
-    getProductList();
-    document.querySelector(".modal-header button").click();
-  });
-  promise.catch((err) => {
-    console.log(err);
-  });
+    promise.then(() => {
+      getProductList();
+      document.querySelector(".modal-header button").click();
+    });
+    promise.catch((err) => {
+      console.log(err);
+    });
+  }
 }
 
 //render product
@@ -57,17 +83,17 @@ function renderProductList(productList) {
                 <td>${product.backCamera}</td>
                 <td>${product.frontCamera}</td>
                 <td>
-                    <img class="img-fluid" style="width: 100px; height: 100px" src=${
+                    <img class="img-fluid" style="width: 100px; height: 100px; object-fit:contain;" src=${
                       product.img
                     } alt="abc" />
                 </td>
                 <td>${product.desc}</td>
                 <td>${product.type}</td>
                 <td>
-                    <button class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="btnEdit(${
+                    <button class="btn btn-success" data-toggle="modal" data-target="#myModal" style="min-width: 80px" onclick="btnEdit(${
                       product.id
                     })">Edit</button>
-                    <button class="btn btn-danger" onclick="deleteProduct(${
+                    <button class="mt-2 btn btn-danger" style="min-width: 80px" onclick="deleteProduct(${
                       product.id
                     })">Delete</button>
                 </td>
@@ -132,6 +158,36 @@ function editProduct(id) {
   });
 }
 
+//search product by name
+function searchByName() {
+  getEle("search").onkeyup = () => {
+    var valueSearch = getEle("search").value;
+    console.log(valueSearch);
+    var valueSearchTolower = valueSearch.toLowerCase();
+    
+    var promise = services.getPrd()
+
+    promise.then((res) => {
+      var cartSearch = [];
+      var cartList = res.data
+      for(var i = 0; i < cartList.length; i++) {
+        var prd = cartList[i];
+        var prdLowerCase = prd.name.toLowerCase();
+  
+        if(prdLowerCase.indexOf(valueSearchTolower) !== -1) {
+          cartSearch.push(prd);
+        }
+      }
+      renderProductList(cartSearch);
+    }) 
+    promise.then((err)=> {
+      console.log(err);
+    })
+  }
+}
+
+searchByName()
+
 // call api
 function getProductList() {
   var promise = services.getPrd();
@@ -162,4 +218,28 @@ function filterProductType() {
   // call renderProductList again to render product list filter
   renderProductList(filteredProducts);
 }
+function sortByPrice() {
+  var selectedType = getEle("sortByPrice").value;
+  var promise = services.getPrd();
+
+  promise.then((res) => {
+    var productList1 = res.data;
+
+    if (selectedType === "low") {
+      // Sort by price from low to high
+      productList1.sort((a, b) => a.price*1 - b.price*1);
+    } else if (selectedType === "high") {
+      // Sort by price from high to low
+      productList1.sort((a, b) => b.price*1 - a.price*1);
+    }
+
+    renderProductList(productList1);
+  });
+}
+
+
+
+
 getEle("filter").addEventListener("change", filterProductType);
+
+getEle("sortByPrice").addEventListener("change", sortByPrice);
