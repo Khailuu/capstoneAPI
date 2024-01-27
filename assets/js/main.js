@@ -30,7 +30,7 @@ function renderProductList(productList) {
     var product = productList[i];
 
     htmlContent += `
-            <div class="col-3">
+            <div class="col-12 col-xl-3 col-lg-3 col-sm-12 col-md-4">
                 <div class="card-group">
                     <div class="card">
                         <div class="text-center">
