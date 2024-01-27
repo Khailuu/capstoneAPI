@@ -67,18 +67,19 @@ function filterProductType() {
   if (selectedType === "all") {
     filteredProducts = productList;
   } else {
-    filteredProducts = productList.filter(product => product.type.toLowerCase() === selectedType);
+    filteredProducts = productList.filter(
+      (product) => product.type.toLowerCase() === selectedType
+    );
   }
   // call renderProductList again to render product list filter
-  renderProductList(filteredProducts); 
+  renderProductList(filteredProducts);
 }
 
-// render cart list 
+// render cart list
 function renderCartList(productList) {
-  var content = ""
+  var content = "";
   for (var i = 0; i < productList.length; i++) {
     var product = productList[i];
-    var index = [i];
     content += `
       <li class="product">
               <a href="#" class="product-link">
@@ -94,18 +95,16 @@ function renderCartList(productList) {
                       <button class="plus-button" id="plus-button-1">+</button>
                       <input type="hidden" name="item-price" id="item-price-1" value="12.00">
                     </span>
-                    <span class="price">$16.00</span>
+                    <span class="price">${product.price}</span>
                   </span>
                 </span>
               </a>
-              <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductCart(2)">X</span></a>
+              <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductCart(${product.id})">X</span></a>
             </li>
     `;
   }
 
-
   getEle("tblCart").innerHTML = content;
-
 }
 
 function addToCart(id) {
@@ -113,90 +112,111 @@ function addToCart(id) {
 
   promise.then((res) => {
     cartInstance.addCart(res.data); // Add the product to the cart list
+    // gán lại id product cart khi add vào mảng cart
+    for (var i = 0; i < cartInstance.listCart.length; i++) {
+      res.data.id = i;
+    }
+    setLocalStorage()
     renderCartList(cartInstance.listCart);
   });
-
-  console.log(cartInstance.listCart);
-
+  
   promise.catch((err) => {
-    console.log(err);
   });
 }
 
 function deleteProductCart(id) {
   cartInstance.deleteProductCart(id);
   renderCartList(cartInstance.listCart);
+  setLocalStorage();
 }
-
 
 // add event onchange
 getEle("filter").addEventListener("change", filterProductType);
 
 getProductList();
 
+$(document).ready(function ($) {
+  // Declare the body variable
+  var $body = $("body");
 
+  // Function that shows and hides the sidebar cart
+  $(".cart-button, .close-button, #sidebar-cart-curtain").click(function (e) {
+    e.preventDefault();
 
+    // Add the show-sidebar-cart class to the body tag
+    $body.toggleClass("show-sidebar-cart");
 
+    // Check if the sidebar curtain is visible
+    if ($("#sidebar-cart-curtain").is(":visible")) {
+      // Hide the curtain
+      $("#sidebar-cart-curtain").fadeOut(500);
+    } else {
+      // Show the curtain
+      $("#sidebar-cart-curtain").fadeIn(500);
+    }
+  });
 
+  // Function that adds or subtracts quantity when a
+  // plus or minus button is clicked
+  $body.on("click", ".plus-button, .minus-button", function () {
+    // Get quantity input values
+    var qty = $(this).closest(".qty").find(".qty-input");
+    var val = parseFloat(qty.val());
+    var max = parseFloat(qty.attr("max"));
+    var min = parseFloat(qty.attr("min"));
+    var step = parseFloat(qty.attr("step"));
+    var stepPrice = 1000;
 
+    // Check which button is clicked
+    for (var i = 0; i < cartInstance.listCart.length; i++) {
+      var product = cartInstance.listCart[i];
+      if ($(this).is(".plus-button")) {
+        // Increase the value
+        qty.val(val + step);
+        // product.price = calculatePrice(
+        //   product.price,
+        //   step,
+        //   stepPrice,
+        //   val + step
+        // );
 
-
-
-
-
-
-
-
-
-
-
-
-
-$(document).ready(function($) {
-	// Declare the body variable
-	var $body = $("body");
-
-	// Function that shows and hides the sidebar cart
-	$(".cart-button, .close-button, #sidebar-cart-curtain").click(function(e) {
-		e.preventDefault();
-		
-		// Add the show-sidebar-cart class to the body tag
-		$body.toggleClass("show-sidebar-cart");
-
-		// Check if the sidebar curtain is visible
-		if ($("#sidebar-cart-curtain").is(":visible")) {
-			// Hide the curtain
-			$("#sidebar-cart-curtain").fadeOut(500);
-		} else {
-			// Show the curtain
-			$("#sidebar-cart-curtain").fadeIn(500);
-		}
-	});
-	
-	// Function that adds or subtracts quantity when a 
-	// plus or minus button is clicked
-	$body.on('click', '.plus-button, .minus-button', function () {
-		// Get quanitity input values
-		var qty = $(this).closest('.qty').find('.qty-input');
-		var val = parseFloat(qty.val());
-		var max = parseFloat(qty.attr('max'));
-		var min = parseFloat(qty.attr('min'));
-		var step = parseFloat(qty.attr('step'));
-
-		// Check which button is clicked
-		if ($(this).is('.plus-button')) {
-			// Increase the value
-			qty.val(val + step);
-		} else {
-			// Check if minimum button is clicked and that value is 
-			// >= to the minimum required
-			if (min && min >= val) {
-				// Do nothing because value is the minimum required
-				qty.val(min);
-			} else if (val > 0) {
-				// Subtract the value
-				qty.val(val - step);
-			}
-		}
-	});
+      } else {
+        // Check if minimum button is clicked and that value is
+        // >= to the minimum required
+        if (min && min >= val) {
+          // Do nothing because value is the minimum required
+          qty.val(min);
+        } else if (val > 0) {
+          // Subtract the value
+          // qty.val(val - step);
+          // product.price = calculatePrice(
+          //   product.basePrice,
+          //   step,
+          //   stepPrice,
+          //   val - step
+          // );
+        }
+      }
+    }
+  });
+  // function calculatePrice(basePrice, step, stepPrice, quantity) {
+  //   return basePrice + Math.floor(quantity / step) * stepPrice;
+  // } 
 });
+
+function setLocalStorage() {
+  var dataStr = JSON.stringify(cartInstance.listCart);
+  localStorage.setItem("cart", dataStr);
+}
+
+function getLocalStorage() {
+  var data = localStorage.getItem("cart");
+
+  if (data !== null) {
+    var parseData = JSON.parse(data);
+    cartInstance.listCart = parseData;
+    renderCartList(cartInstance.listCart);
+  }
+}
+
+getLocalStorage();
