@@ -6,6 +6,8 @@ var service = new Services();
 var cartInstance = new Cart();
 var cartItem1 = new Cart();
 var cartItem2 = new Cart();
+var countCart;
+var priceChange;
 var productList; // Thêm biến để lưu trữ danh sách sản phẩm gốc
 
 // getProductList call API
@@ -37,6 +39,7 @@ function renderProductList(productList) {
                             <img src="${product.img}" class="img-fluid mt-4" style="width: 240px" alt="" id="HinhSP">
                         </div>
                         <div class="card-body">
+                            <h3 class="card-title">${product.price}$</h3>
                             <h3 class="card-title">${product.name}</h3>
                             <h5>${product.screen}</h5>
                             <p>${product.backCamera}</p>
@@ -113,19 +116,24 @@ function addToCart(id) {
   promise.then((res) => {
     cartInstance.addCart(res.data); // Add the product to the cart list
     // gán lại id product cart khi add vào mảng cart
+    var count = 0;
     for (var i = 0; i < cartInstance.listCart.length; i++) {
       res.data.id = i;
+      count++
     }
-    setLocalStorage()
+    countCart = count;
+    getEle("countCart").innerHTML = count;
+    setLocalStorage();
     renderCartList(cartInstance.listCart);
   });
-  
-  promise.catch((err) => {
-  });
+
+  promise.catch((err) => {});
 }
 
 function deleteProductCart(id) {
-  cartInstance.deleteProductCart(id);
+  // debugger
+  countCart = cartInstance.deleteProductCart(id, countCart);
+  getEle("countCart").innerHTML = countCart;
   renderCartList(cartInstance.listCart);
   setLocalStorage();
 }
@@ -165,56 +173,72 @@ $(document).ready(function ($) {
     var max = parseFloat(qty.attr("max"));
     var min = parseFloat(qty.attr("min"));
     var step = parseFloat(qty.attr("step"));
-    var stepPrice = 1000;
 
     // Check which button is clicked
     for (var i = 0; i < cartInstance.listCart.length; i++) {
-      var product = cartInstance.listCart[i];
-      if ($(this).is(".plus-button")) {
-        // Increase the value
-        qty.val(val + step);
-        // product.price = calculatePrice(
-        //   product.price,
-        //   step,
-        //   stepPrice,
-        //   val + step
-        // );
+        productList = cartInstance.listCart[i];
+        var priceUpAndDown = productList.price;
 
-      } else {
-        // Check if minimum button is clicked and that value is
-        // >= to the minimum required
-        if (min && min >= val) {
-          // Do nothing because value is the minimum required
-          qty.val(min);
-        } else if (val > 0) {
-          // Subtract the value
-          // qty.val(val - step);
-          // product.price = calculatePrice(
-          //   product.basePrice,
-          //   step,
-          //   stepPrice,
-          //   val - step
-          // );
+        // Check if the current button click corresponds to the current product
+        if ($(this).closest(".product").index() === i) {
+            if ($(this).is(".plus-button")) {
+                // Increase the value
+                qty.val(val + step);
+                priceUpAndDown = calculatePrice(productList.price, val + step);
+
+            } else {
+                // Check if minimum button is clicked and that value is
+                // >= to the minimum required
+                if (min && min >= val) {
+                    // Do nothing because value is the minimum required
+                    qty.val(min);
+                } else if (val > 0) {
+                    // Subtract the value
+                    qty.val(val - step);
+                    priceUpAndDown = calculatePrice(productList.price, val - step);
+                }
+            }
+
+            // Update the price for the corresponding product
+            $(this).closest(".product").find(".price").text(priceUpAndDown);
+            console.log(priceUpAndDown);
+            console.log(step);
+            priceChange = priceUpAndDown;
+
+            // Exit the loop since we found the corresponding product
+            break;
         }
-      }
+        setLocalStorage()
     }
-  });
-  // function calculatePrice(basePrice, step, stepPrice, quantity) {
-  //   return basePrice + Math.floor(quantity / step) * stepPrice;
-  // } 
+});
+
+  function calculatePrice(basePrice, step) {
+    return basePrice * step;
+  }
 });
 
 function setLocalStorage() {
+  var dataCount = JSON.stringify(countCart);
   var dataStr = JSON.stringify(cartInstance.listCart);
+  var price = JSON.stringify(priceChange);
+  localStorage.setItem("price", price);
+  localStorage.setItem("count", dataCount);
   localStorage.setItem("cart", dataStr);
 }
 
 function getLocalStorage() {
   var data = localStorage.getItem("cart");
+  var count = localStorage.getItem("count")
+  var price = localStorage.getItem("price")
 
   if (data !== null) {
+    var parseCount = JSON.parse(count);
     var parseData = JSON.parse(data);
+    var parsePrice = JSON.parse(price);
     cartInstance.listCart = parseData;
+    countCart = parseCount;
+    // priceChange = parsePrice
+    getEle("countCart").innerHTML = countCart;
     renderCartList(cartInstance.listCart);
   }
 }

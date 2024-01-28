@@ -19,11 +19,14 @@ function Cart () {
         else return undefined;
     }
 
-    this.deleteProductCart = (id) => {
+    this.deleteProductCart = (id, count) => {
         var index = this.finđIndexProduct(id);
 
         if(index !== -1){
             this.listCart.splice(index, 1);
+            count--;
         }
+        console.log(count);
+        return count;
     }
 }

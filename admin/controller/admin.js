@@ -235,6 +235,9 @@ function sortByPrice() {
 
     renderProductList(productList1);
   });
+  promise.catch((err)=>{
+    console.log(err);
+  })
 }
 
 
