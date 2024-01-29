@@ -4,6 +4,7 @@ function getEle(id) {
 var services = new Services();
 var validation = new Validation();
 var productList;
+
 //get product from input
 function getProductFromInput(isAdd) {
   var name = getEle("name").value;
@@ -14,17 +15,25 @@ function getProductFromInput(isAdd) {
   var image = getEle("image").value;
   var desc = getEle("description").value;
   var type = getEle("type").value;
-
+  var promise = services.getPrd()
   var isValid = true;
   // debugger;
   if (isAdd) {
+    // debugger;
     isValid &= validation.checkNull(
       name,
       "tbName",
       "Please enter name in the designated field"
-    );
-  }
-
+      ) &&
+      promise.then((res)=>{
+        isValid &= validation.checkNameExist(
+          name, res.data, "tbName", "Name exist!"
+        )
+        console.log(res.data);
+      })
+      
+    }
+    
   isValid &= validation.checkNull(price, "tbPrice", "Please enter price in the designated field ") &&
   validation.checkPattern(price, "tbPrice", "Please enter price is number", /^[0-9]+$/);
   isValid &= validation.checkNull(screen, "tbScreen", "Please enter screen in the designated field ");
@@ -62,6 +71,7 @@ function renderProductFromInput() {
     promise.then(() => {
       getProductList();
       document.querySelector(".modal-header button").click();
+      resetInput();
     });
     promise.catch((err) => {
       console.log(err);
@@ -135,6 +145,7 @@ function btnEdit(id) {
     getEle("image").value = product.img;
     getEle("description").value = product.desc;
     getEle("type").value = product.type;
+    console.log(product.type);
   });
 
   promise.catch((err) => {
@@ -151,6 +162,7 @@ function editProduct(id) {
 
   promise.then((res) => {
     getProductList();
+    resetInput();
   });
 
   promise.catch((err) => {
@@ -187,6 +199,17 @@ function searchByName() {
 }
 
 searchByName()
+
+function resetInput() {
+  getEle("name").value = "";
+  getEle("price").value = "";
+  getEle("screen").value = "";
+  getEle("backCamera").value = "";
+  getEle("frontCamera").value = "";
+  getEle("image").value = "";
+  getEle("description").value = "";
+  getEle("type").value = "";
+}
 
 // call api
 function getProductList() {
@@ -239,7 +262,6 @@ function sortByPrice() {
     console.log(err);
   })
 }
-
 
 
 

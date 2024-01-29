@@ -32,7 +32,7 @@ function renderProductList(productList) {
     var product = productList[i];
 
     htmlContent += `
-            <div class="col-12 col-xl-3 col-lg-3 col-sm-12 col-md-4">
+            <div class="col-12 col-xl-3 col-lg-3 col-sm-12 col-md-4 mt-4">
                 <div class="card-group">
                     <div class="card">
                         <div class="text-center">
@@ -98,7 +98,7 @@ function renderCartList(productList) {
                       <button class="plus-button" id="plus-button-1">+</button>
                       <input type="hidden" name="item-price" id="item-price-1" value="12.00">
                     </span>
-                    <span class="price">${product.price}</span>
+                    <span class="price">${product.price}</span> 
                   </span>
                 </span>
               </a>
@@ -110,6 +110,8 @@ function renderCartList(productList) {
   getEle("tblCart").innerHTML = content;
 }
 
+
+
 function addToCart(id) {
   var promise = service.getPrdId(id);
 
@@ -119,7 +121,7 @@ function addToCart(id) {
     var count = 0;
     for (var i = 0; i < cartInstance.listCart.length; i++) {
       res.data.id = i;
-      count++
+      count++;
     }
     countCart = count;
     getEle("countCart").innerHTML = count;
@@ -166,56 +168,11 @@ $(document).ready(function ($) {
 
   // Function that adds or subtracts quantity when a
   // plus or minus button is clicked
-  $body.on("click", ".plus-button, .minus-button", function () {
-    // Get quantity input values
-    var qty = $(this).closest(".qty").find(".qty-input");
-    var val = parseFloat(qty.val());
-    var max = parseFloat(qty.attr("max"));
-    var min = parseFloat(qty.attr("min"));
-    var step = parseFloat(qty.attr("step"));
-
-    // Check which button is clicked
-    for (var i = 0; i < cartInstance.listCart.length; i++) {
-        productList = cartInstance.listCart[i];
-        var priceUpAndDown = productList.price;
-
-        // Check if the current button click corresponds to the current product
-        if ($(this).closest(".product").index() === i) {
-            if ($(this).is(".plus-button")) {
-                // Increase the value
-                qty.val(val + step);
-                priceUpAndDown = calculatePrice(productList.price, val + step);
-
-            } else {
-                // Check if minimum button is clicked and that value is
-                // >= to the minimum required
-                if (min && min >= val) {
-                    // Do nothing because value is the minimum required
-                    qty.val(min);
-                } else if (val > 0) {
-                    // Subtract the value
-                    qty.val(val - step);
-                    priceUpAndDown = calculatePrice(productList.price, val - step);
-                }
-            }
-
-            // Update the price for the corresponding product
-            $(this).closest(".product").find(".price").text(priceUpAndDown);
-            console.log(priceUpAndDown);
-            console.log(step);
-            priceChange = priceUpAndDown;
-
-            // Exit the loop since we found the corresponding product
-            break;
-        }
-        setLocalStorage()
-    }
+  
 });
-
-  function calculatePrice(basePrice, step) {
-    return basePrice * step;
-  }
-});
+function calculatePrice(basePrice, step) {
+  return basePrice * step;
+}
 
 function setLocalStorage() {
   var dataCount = JSON.stringify(countCart);
@@ -228,8 +185,8 @@ function setLocalStorage() {
 
 function getLocalStorage() {
   var data = localStorage.getItem("cart");
-  var count = localStorage.getItem("count")
-  var price = localStorage.getItem("price")
+  var count = localStorage.getItem("count");
+  var price = localStorage.getItem("price");
 
   if (data !== null) {
     var parseCount = JSON.parse(count);
@@ -237,7 +194,8 @@ function getLocalStorage() {
     var parsePrice = JSON.parse(price);
     cartInstance.listCart = parseData;
     countCart = parseCount;
-    // priceChange = parsePrice
+    priceChange = parsePrice;
+
     getEle("countCart").innerHTML = countCart;
     renderCartList(cartInstance.listCart);
   }

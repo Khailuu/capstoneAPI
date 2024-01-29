@@ -26,6 +26,11 @@ header nav ul li a {
 }
 header nav i {
   color: #fff;
+  transition: all 0.3s;
+}
+header nav i:hover {
+  cursor: pointer;
+  color: #4dc0e3;
 }
 
 * {
@@ -489,7 +494,7 @@ body.show-sidebar-cart #sidebar-cart {
   align-items: center;
 }
 .products .card-group {
-  min-height: 613px;
+  min-height: 700px;
 }
 .products .card-group .card-body {
   display: flex;
@@ -513,7 +518,8 @@ body.show-sidebar-cart #sidebar-cart {
 .products .card-group .card-footer i:hover {
   color: black;
   cursor: pointer;
-}/*# sourceMappingURL=index.css.map */
-.sp-thongbao {
-  color: red;
 }
+
+section span {
+  color: red;
+}/*# sourceMappingURL=index.css.map */
