@@ -5,6 +5,8 @@ var services = new Services();
 var validation = new Validation();
 var productList;
 
+
+
 //get product from input
 function getProductFromInput(isAdd) {
   var name = getEle("name").value;
@@ -15,7 +17,6 @@ function getProductFromInput(isAdd) {
   var image = getEle("image").value;
   var desc = getEle("description").value;
   var type = getEle("type").value;
-  var promise = services.getPrd()
   var isValid = true;
   // debugger;
   if (isAdd) {
@@ -24,24 +25,51 @@ function getProductFromInput(isAdd) {
       name,
       "tbName",
       "Please enter name in the designated field"
-      ) &&
-      promise.then((res)=>{
-        isValid &= validation.checkNameExist(
-          name, res.data, "tbName", "Name exist!"
-        )
-        console.log(res.data);
-      })
-      
-    }
-    
-  isValid &= validation.checkNull(price, "tbPrice", "Please enter price in the designated field ") &&
-  validation.checkPattern(price, "tbPrice", "Please enter price is number", /^[0-9]+$/);
-  isValid &= validation.checkNull(screen, "tbScreen", "Please enter screen in the designated field ");
-  isValid &= validation.checkNull(backCamera, "tbBackCamera", "Please enter back camera in the designated field ");
-  isValid &= validation.checkNull(frontCamera, "tbFrontCamera", "Please enter front camera in the designated field ");
-  isValid &= validation.checkNull(image, "tbImage", "Please enter image url in the designated field ");
-  isValid &= validation.checkNull(desc, "tbDesc", "Please enter description in the designated field ");
-  isValid &= validation.checkType("type", "tbType", "Please enter type in the designated field ")
+    );
+  }
+
+  isValid &=
+    validation.checkNull(
+      price,
+      "tbPrice",
+      "Please enter price in the designated field "
+    ) &&
+    validation.checkPattern(
+      price,
+      "tbPrice",
+      "Please enter price is number",
+      /^[0-9]+$/
+    );
+  isValid &= validation.checkNull(
+    screen,
+    "tbScreen",
+    "Please enter screen in the designated field "
+  );
+  isValid &= validation.checkNull(
+    backCamera,
+    "tbBackCamera",
+    "Please enter back camera in the designated field "
+  );
+  isValid &= validation.checkNull(
+    frontCamera,
+    "tbFrontCamera",
+    "Please enter front camera in the designated field "
+  );
+  isValid &= validation.checkNull(
+    image,
+    "tbImage",
+    "Please enter image url in the designated field "
+  );
+  isValid &= validation.checkNull(
+    desc,
+    "tbDesc",
+    "Please enter description in the designated field "
+  );
+  isValid &= validation.checkType(
+    "type",
+    "tbType",
+    "Please enter type in the designated field "
+  );
 
   if (!isValid) {
     return null;
@@ -67,7 +95,6 @@ function renderProductFromInput() {
 
   if (product) {
     var promise = services.addPrd(product);
-
     promise.then(() => {
       getProductList();
       document.querySelector(".modal-header button").click();
@@ -176,29 +203,29 @@ function searchByName() {
     var valueSearch = getEle("search").value;
     console.log(valueSearch);
     var valueSearchTolower = valueSearch.toLowerCase();
-    
-    var promise = services.getPrd()
+
+    var promise = services.getPrd();
 
     promise.then((res) => {
       var cartSearch = [];
-      var cartList = res.data
-      for(var i = 0; i < cartList.length; i++) {
+      var cartList = res.data;
+      for (var i = 0; i < cartList.length; i++) {
         var prd = cartList[i];
         var prdLowerCase = prd.name.toLowerCase();
-  
-        if(prdLowerCase.indexOf(valueSearchTolower) !== -1) {
+
+        if (prdLowerCase.indexOf(valueSearchTolower) !== -1) {
           cartSearch.push(prd);
         }
       }
       renderProductList(cartSearch);
-    }) 
-    promise.then((err)=> {
+    });
+    promise.then((err) => {
       console.log(err);
-    })
-  }
+    });
+  };
 }
 
-searchByName()
+searchByName();
 
 function resetInput() {
   getEle("name").value = "";
@@ -250,20 +277,18 @@ function sortByPrice() {
 
     if (selectedType === "low") {
       // Sort by price from low to high
-      productList1.sort((a, b) => a.price*1 - b.price*1);
+      productList1.sort((a, b) => a.price * 1 - b.price * 1);
     } else if (selectedType === "high") {
       // Sort by price from high to low
-      productList1.sort((a, b) => b.price*1 - a.price*1);
+      productList1.sort((a, b) => b.price * 1 - a.price * 1);
     }
 
     renderProductList(productList1);
   });
-  promise.catch((err)=>{
+  promise.catch((err) => {
     console.log(err);
-  })
+  });
 }
-
-
 
 getEle("filter").addEventListener("change", filterProductType);
 
