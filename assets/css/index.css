@@ -32,6 +32,24 @@ header nav i:hover {
   cursor: pointer;
   color: #4dc0e3;
 }
+header nav .count {
+  position: relative;
+}
+header nav .count i {
+  font-size: 30px;
+}
+header nav .count span {
+  display: none;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background-color: red;
+  border-radius: 50%;
+  transform: translate(-16px, -16px);
+}
 
 * {
   box-sizing: border-box;
@@ -520,6 +538,6 @@ body.show-sidebar-cart #sidebar-cart {
   cursor: pointer;
 }
 
-section span {
+section .form-group span {
   color: red;
 }/*# sourceMappingURL=index.css.map */

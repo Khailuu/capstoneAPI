@@ -3,30 +3,25 @@ function Cart () {
 
     this.addCart = (product) => {
         this.listCart.push(product);
+        console.log(this.listCart);
     }
 
-    this.finđIndexProduct = (id) => {
-        var index = -1; 
-        for(var i = 0; i<this.listCart.length; i++){
-            if(id === this.listCart[i].id){
-                index = i;
-                break;
-            }
-        }
-        if(index !== -1) {
-            return index;
-        }
-        else return undefined;
-    }
+    // this.finđIndexProduct = (id) => {
+    //     var index = -1; 
+    //     for(var i = 0; i<this.listCart.length; i++){
+    //         if(id === this.listCart[i]){
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     if(index !== -1) {
+    //         return index;
+    //     }
+    //     else return undefined;
+    // }
 
-    this.deleteProductCart = (id, count) => {
-        var index = this.finđIndexProduct(id);
-
-        if(index !== -1){
-            this.listCart.splice(index, 1);
-            count--;
-        }
-        console.log(count);
-        return count;
+    this.deleteProductCart = (id) => {
+        // var index = this.finđIndexProduct(id);   
+        this.listCart.splice(id, 1);
     }
 }

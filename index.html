@@ -73,7 +73,10 @@
             <option value="samsung">Samsung</option>
           </select>
         </form>
-        <i class="fa-solid cart-button  fa-cart-shopping ml-3"></i>
+        <div class="count">
+          <i class="fa-solid cart-button  fa-cart-shopping ml-3"></i>
+          <span id="countCartNav"></span>
+        </div>
       </nav>
       <aside id="sidebar-cart">
         <main>
@@ -83,11 +86,12 @@
           </ul>
           <div class="totals">
             <div class="subtotal">
-              <span class="label">Subtotal:</span><span id="total" class="amount"></span>
+              <span class="label">Subtotal:</span>
+              <span id="total-price" class="total-price"></span>
             </div>
           </div>
           <div class="action-buttons">
-            <a class="view-cart-button" href="#">Cart</a><a class="checkout-button" href="#">Checkout</a>
+            <a class="view-cart-button" onclick="resetCart()" href="#">Clear</a><a class="checkout-button" onclick="resetCart()" href="#">Checkout</a>
           </div>
         </main>
       </aside>
@@ -115,6 +119,7 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.6/axios.min.js"
       integrity="sha512-CmAbe9oceGW5QqQ3m4+xHwUEILjqe3qxPkgdAsGL6mTDSqNcnoHDDdl+rZTwibMlnw0Sqf3IRvfsKNfIKqX/8g=="

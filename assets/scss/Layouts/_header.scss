@@ -24,6 +24,24 @@ header {
 				color: $secondary;
 			}
         }
+		.count {
+			position: relative;
+			i {
+				font-size: 30px;
+			}
+			span {
+				display: none;
+				color: #fff;
+				font-size: 16px;
+				text-align: center;
+				position: absolute;
+				width: 25px;
+				height: 25px;
+				background-color: red;
+				border-radius: 50%;
+				transform: translate(-16px, -16px);
+			}
+		}
         
     }
 }

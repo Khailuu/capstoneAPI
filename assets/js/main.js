@@ -4,10 +4,7 @@ function getEle(id) {
 
 var service = new Services();
 var cartInstance = new Cart();
-var cartItem1 = new Cart();
-var cartItem2 = new Cart();
-var countCart;
-var priceChange;
+var basePrice = [];
 var productList; // Thêm biến để lưu trữ danh sách sản phẩm gốc
 
 // getProductList call API
@@ -93,16 +90,16 @@ function renderCartList(productList) {
                   <h3>${product.name}</h3>
                   <span class="qty-price">
                     <span class="qty">
-                      <button class="minus-button" id="minus-button-1">-</button>
-                      <input type="number" id="qty-input-1" class="qty-input" step="1" min="1" max="1000" name="qty-input" value="1" pattern="[0-9]*" title="Quantity" inputmode="numeric">
-                      <button class="plus-button" id="plus-button-1">+</button>
+                      <button class="minus-button" id="minus-button-1" onclick="descreaseQuantityInCart(${i})">-</button>
+                      <input type="number" id="qty-input-${i}" class="qty-input" step="1" min="1" max="1000" name="qty-input" value="${product.quantity}" pattern="[0-9]*" title="Quantity" inputmode="numeric">
+                      <button class="plus-button" id="plus-button-1" onclick="increaseQuantityInCart(${i})">+</button>
                       <input type="hidden" name="item-price" id="item-price-1" value="12.00">
                     </span>
-                    <span class="price">${product.price}</span> 
+                    <span class="price" id="price-span-${i}">${product.price}</span> 
                   </span>
                 </span>
               </a>
-              <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductCart(${product.id})">X</span></a>
+              <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductInCart(${i})">X</span></a>
             </li>
     `;
   }
@@ -110,33 +107,126 @@ function renderCartList(productList) {
   getEle("tblCart").innerHTML = content;
 }
 
-
-
 function addToCart(id) {
   var promise = service.getPrdId(id);
 
   promise.then((res) => {
-    cartInstance.addCart(res.data); // Add the product to the cart list
-    // gán lại id product cart khi add vào mảng cart
-    var count = 0;
-    for (var i = 0; i < cartInstance.listCart.length; i++) {
-      res.data.id = i;
-      count++;
+    
+    // Check if the product is already in the cart
+    var existingProductIndex = cartInstance.listCart.findIndex(
+      (cartItem) => cartItem.id === res.data.id
+    );
+
+    if (existingProductIndex === -1) {
+      // Product is not in the cart, add it
+      // res.data.id = cartInstance.listCart.length; // Set a new unique ID for the new product
+      res.data.quantity = 1; // Set the quantity for the new product
+      cartInstance.listCart.push(res.data); // Add the product to the cart list
+      basePrice.push(res.data.price);
+    } else {
+      // Product is already in the cart, increment its quantity
+      cartInstance.listCart[existingProductIndex].quantity += 1;
+      var price = getEle("price-span-" + existingProductIndex);
+      cartInstance.listCart[existingProductIndex].price = basePrice[existingProductIndex] * cartInstance.listCart[existingProductIndex].quantity;
+      price.innerHTML = cartInstance.listCart[existingProductIndex].price;    
     }
-    countCart = count;
-    getEle("countCart").innerHTML = count;
-    setLocalStorage();
-    renderCartList(cartInstance.listCart);
+
+    getEle("countCartNav").style.display = "inline-block";
+    getEle("countCartNav").innerHTML = cartInstance.listCart.length;;
+    getEle("countCart").innerHTML = cartInstance.listCart.length;; // Update the count in the UI
+    console.log(cartInstance.listCart);
+
+    renderCartList(cartInstance.listCart); // Render the updated cart list
+    setLocalStorage(); // Update local storage
+    updateTotalPrice();
   });
 
-  promise.catch((err) => {});
+  promise.catch((err) => {
+    // Handle errors if needed
+  });
+  return basePrice
 }
 
-function deleteProductCart(id) {
-  // debugger
-  countCart = cartInstance.deleteProductCart(id, countCart);
-  getEle("countCart").innerHTML = countCart;
+updateTotalPrice();
+
+function calculateTotalPrice(cart) {
+  var totalPrice = 0;
+
+  for (var i = 0; i < cart.length; i++) {
+    var product = cart[i];
+    totalPrice += product.price; // Tính tổng giá trị dựa vào giá của sản phẩm và số lượng
+  }
+
+  console.log(totalPrice);
+  localStorage.setItem("totalPrice", totalPrice);
+  return totalPrice;
+}
+
+// Gọi hàm và cập nhật tổng giá trị trong giao diện người dùng
+function updateTotalPrice() {
+  var totalSpan = getEle("total-price");
+  var total = calculateTotalPrice(cartInstance.listCart);
+  totalSpan.innerHTML = total;
+}
+
+function increaseQuantityInCart(id) {
+  cartInstance.listCart[id].quantity += 1;
+  var qty = getEle("qty-input-" + id);
+  var price = getEle("price-span-" + id);
+
+
+  cartInstance.listCart[id].price = basePrice[id] * cartInstance.listCart[id].quantity;
+  // price.innerHTML = newprice
+  // console.log(newprice);
+  price.innerHTML = cartInstance.listCart[id].price;
+  qty.innerHTML = cartInstance.listCart[id].quantity;
+  (cartInstance.listCart, id);
   renderCartList(cartInstance.listCart);
+  updateTotalPrice();
+  setLocalStorage(); // Update local storage
+}
+
+// function increaseQuantityInCart(id) {
+//   var priceSpan = getEle("price-span-" +id);
+//   var qtyInput = getEle("qty-input-1");
+//   cartInstance.listCart.forEach((cartItem, index) => {
+//     if(cartItem.id === index) {
+//       cartInstance.listCart[index].quantity += 1;
+//       qtyInput.value = cartInstance.listCart[index].quantity;
+//       var basePrice = cartInstance.listCart[index].price;
+//       var newPrice = calculatePrice(basePrice, cartInstance.listCart[index].quantity)
+//       console.log(cartInstance.listCart[index]);
+//       priceSpan.innerHTML = newPrice
+//     }
+//   })
+
+//   console.log(cartInstance.listCart);
+//   setLocalStorage()
+// }
+function descreaseQuantityInCart(id) {
+  var price = getEle("price-span-" + id);
+  cartInstance.listCart[id].quantity -= 1;
+  cartInstance.listCart[id].price = basePrice[id] * cartInstance.listCart[id].quantity;
+  price.innerHTML = cartInstance.listCart[id].price;
+  var qty = getEle("qty-input-" + id);
+
+  qty.innerHTML = cartInstance.listCart[id].quantity;
+  renderCartList(cartInstance.listCart);
+  updateTotalPrice();
+  setLocalStorage(); // Update local storage
+}
+
+function deleteProductInCart(id) {
+  // debugger
+  cartInstance.deleteProductCart(id);
+  basePrice.splice(id, 1);
+  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
+  if(cartInstance.listCart.length === 0){
+    getEle("countCartNav").style.display = "none";
+  }
+  getEle("countCart").innerHTML = cartInstance.listCart.length;;
+  renderCartList(cartInstance.listCart);
+  updateTotalPrice();
   setLocalStorage();
 }
 
@@ -168,35 +258,48 @@ $(document).ready(function ($) {
 
   // Function that adds or subtracts quantity when a
   // plus or minus button is clicked
-  
 });
-function calculatePrice(basePrice, step) {
-  return basePrice * step;
+
+function resetCart() {
+  basePrice = []
+  cartInstance.listCart.splice(0, cartInstance.listCart.length)
+  getEle("countCart").innerHTML = cartInstance.listCart.length;
+  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
+  getEle("countCartNav").style.display = "none";
+  getEle("total-price").innerHTML = 0;
+  renderCartList(cartInstance.listCart)
+  setLocalStorage()
 }
 
 function setLocalStorage() {
-  var dataCount = JSON.stringify(countCart);
+  var dataCount = JSON.stringify(cartInstance.listCart.length);
   var dataStr = JSON.stringify(cartInstance.listCart);
-  var price = JSON.stringify(priceChange);
-  localStorage.setItem("price", price);
+  var dataPrice = JSON.stringify(basePrice)
   localStorage.setItem("count", dataCount);
   localStorage.setItem("cart", dataStr);
+  localStorage.setItem("price", dataPrice)
 }
 
 function getLocalStorage() {
   var data = localStorage.getItem("cart");
   var count = localStorage.getItem("count");
   var price = localStorage.getItem("price");
-
+  var totalPrice = localStorage.getItem("totalPrice");
   if (data !== null) {
     var parseCount = JSON.parse(count);
     var parseData = JSON.parse(data);
     var parsePrice = JSON.parse(price);
+    var parseTotalPrice = JSON.parse(totalPrice);
     cartInstance.listCart = parseData;
-    countCart = parseCount;
-    priceChange = parsePrice;
-
-    getEle("countCart").innerHTML = countCart;
+    cartInstance.listCart.length = parseCount;
+    totalPrice = parseTotalPrice
+    if(cartInstance.listCart.length > 0){
+      getEle("countCartNav").style.display = "inline-block";
+      getEle("countCartNav").innerHTML = cartInstance.listCart.length;;
+      basePrice = parsePrice;
+      updateTotalPrice();
+    }
+    getEle("countCart").innerHTML = cartInstance.listCart.length;
     renderCartList(cartInstance.listCart);
   }
 }
