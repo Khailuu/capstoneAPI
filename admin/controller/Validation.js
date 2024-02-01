@@ -28,23 +28,23 @@ function Validation() {
   };
 
   
-  this.checkNameExist = (value, productList, elementID, messageErr) => {
+  // this.checkNameExist = (value, productList, elementID, messageErr) => {
     
-    var index = -1;
-    for (var i = 0; i < productList.length; i++) {
-        console.log(productList[i].name.trim().replace(/\s+/g, '').toLowerCase());
-        console.log(value);
-      if (productList[i].name.trim().replace(/\s+/g, '').toLowerCase() === value.trim().replace(/\s+/g, '').toLowerCase()) {
-        index = i;
-        break;
-      }
-    }
+  //   var index = -1;
+  //   for (var i = 0; i < productList.length; i++) {
+  //       console.log(productList[i].name.trim().replace(/\s+/g, '').toLowerCase());
+  //       console.log(value);
+  //     if (productList[i].name.trim().replace(/\s+/g, '').toLowerCase() === value.trim().replace(/\s+/g, '').toLowerCase()) {
+  //       index = i;
+  //       break;
+  //     }
+  //   }
 
-    if (index === -1) {
-      getEle(elementID).innerHTML = "";
-      return true;
-    }
-    getEle(elementID).innerHTML = messageErr;
-    return false;
-  };
+  //   if (index === -1) {
+  //     getEle(elementID).innerHTML = "";
+  //     return true;
+  //   }
+  //   getEle(elementID).innerHTML = messageErr;
+  //   return false;
+  // };
 }

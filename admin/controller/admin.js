@@ -33,7 +33,8 @@ function getProductFromInput(isAdd) {
       price,
       "tbPrice",
       "Please enter price in the designated field "
-    ) &&
+    )
+     &&
     validation.checkPattern(
       price,
       "tbPrice",
@@ -77,7 +78,7 @@ function getProductFromInput(isAdd) {
 
   var product = new Products(
     name,
-    price,
+    parseFloat(price),
     screen,
     backCamera,
     frontCamera,
@@ -165,14 +166,13 @@ function btnEdit(id) {
   promise.then((res) => {
     var product = res.data;
     getEle("name").value = product.name;
-    getEle("price").value = product.price;
+    getEle("price").value = product.price*1;
     getEle("screen").value = product.screen;
     getEle("backCamera").value = product.backCamera;
     getEle("frontCamera").value = product.frontCamera;
     getEle("image").value = product.img;
     getEle("description").value = product.desc;
     getEle("type").value = product.type;
-    console.log(product.type);
   });
 
   promise.catch((err) => {
