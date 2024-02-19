@@ -5,14 +5,14 @@ function getEle(id) {
 var service = new Services();
 var cartInstance = new Cart();
 var basePrice = [];
-var productList; // Thêm biến để lưu trữ danh sách sản phẩm gốc
+var productList; // Add a variable to store the original product list
 
 // getProductList call API
 function getProductList() {
   var promise = service.getPrd();
 
   promise.then((res) => {
-    productList = res.data; // Lưu danh sách sản phẩm gốc
+    productList = res.data; // Save the original product list
     renderProductList(productList);
   });
 
@@ -29,33 +29,33 @@ function renderProductList(productList) {
     var product = productList[i];
 
     htmlContent += `
-            <div class="col-12 col-xl-3 col-lg-3 col-sm-12 col-md-4 mt-4">
-                <div class="card-group">
-                    <div class="card">
-                        <div class="text-center">
-                            <img src="${product.img}" class="img-fluid mt-4" style="width: 240px" alt="" id="HinhSP">
-                        </div>
-                        <div class="card-body">
-                            <h3 class="card-title">${product.price}$</h3>
-                            <h3 class="card-title">${product.name}</h3>
-                            <h5>${product.screen}</h5>
-                            <p>${product.backCamera}</p>
-                            <p>${product.frontCamera}</p>
-                            <p class="card-text">${product.desc}</p>
-                            <div class="card-footer d-flex justify-content-between">
-                                <span class="card-text">${product.type}</span>
-                                <span>
-                                    <i class="fa-solid fa-cart-shopping" onclick="addToCart(${product.id})"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div class="col-12 col-xl-3 col-lg-3 col-sm-12 col-md-4 mt-4">
+        <div class="card-group">
+          <div class="card">
+            <div class="text-center">
+              <img src="${product.img}" class="img-fluid mt-4" style="width: 240px" alt="" id="HinhSP">
             </div>
-        `;
+            <div class="card-body">
+              <h3 class="card-title">${product.price}$</h3>
+              <h3 class="card-title">${product.name}</h3>
+              <h5>${product.screen}</h5>
+              <p>${product.backCamera}</p>
+              <p>${product.frontCamera}</p>
+              <p class="card-text">${product.desc}</p>
+              <div class="card-footer d-flex justify-content-between">
+                <span class="card-text">${product.type}</span>
+                <span>
+                  <i class="fa-solid fa-cart-shopping" onclick="addToCart(${product.id})"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
-  // hiển thị table
+  // Display the table
   getEle("colSP").innerHTML = htmlContent;
 }
 
@@ -71,7 +71,7 @@ function filterProductType() {
       (product) => product.type.toLowerCase() === selectedType
     );
   }
-  // call renderProductList again to render product list filter
+  // call renderProductList again to render filtered product list
   renderProductList(filteredProducts);
 }
 
@@ -82,25 +82,25 @@ function renderCartList(productList) {
     var product = productList[i];
     content += `
       <li class="product">
-              <a href="#" class="product-link">
-                <span class="product-image">
-                  <img src="${product.img}" alt="Product Photo">
-                </span>
-                <span class="product-details">
-                  <h3>${product.name}</h3>
-                  <span class="qty-price">
-                    <span class="qty">
-                      <button class="minus-button" id="minus-button-1" onclick="descreaseQuantityInCart(${i})">-</button>
-                      <input type="number" id="qty-input-${i}" class="qty-input" step="1" min="1" max="1000" name="qty-input" value="${product.quantity}" pattern="[0-9]*" title="Quantity" inputmode="numeric">
-                      <button class="plus-button" id="plus-button-1" onclick="increaseQuantityInCart(${i})">+</button>
-                      <input type="hidden" name="item-price" id="item-price-1" value="12.00">
-                    </span>
-                    <span class="price" id="price-span-${i}">${product.price}</span> 
-                  </span>
-                </span>
-              </a>
-              <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductInCart(${i})">X</span></a>
-            </li>
+        <a href="#" class="product-link">
+          <span class="product-image">
+            <img src="${product.img}" alt="Product Photo">
+          </span>
+          <span class="product-details">
+            <h3>${product.name}</h3>
+            <span class="qty-price">
+              <span class="qty">
+                <button class="minus-button" id="minus-button-1" onclick="decreaseQuantityInCart(${i})">-</button>
+                <input type="number" id="qty-input-${i}" class="qty-input" step="1" min="1" max="1000" name="qty-input" value="${product.quantity}" pattern="[0-9]*" title="Quantity" inputmode="numeric">
+                <button class="plus-button" id="plus-button-1" onclick="increaseQuantityInCart(${i})">+</button>
+                <input type="hidden" name="item-price" id="item-price-1" value="12.00">
+              </span>
+              <span class="price" id="price-span-${i}">${product.price}</span> 
+            </span>
+          </span>
+        </a>
+        <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductInCart(${i})">X</span></a>
+      </li>
     `;
   }
 
@@ -111,7 +111,6 @@ function addToCart(id) {
   var promise = service.getPrdId(id);
 
   promise.then((res) => {
-    
     // Check if the product is already in the cart
     var existingProductIndex = cartInstance.listCart.findIndex(
       (cartItem) => cartItem.id === res.data.id
@@ -119,7 +118,6 @@ function addToCart(id) {
 
     if (existingProductIndex === -1) {
       // Product is not in the cart, add it
-      // res.data.id = cartInstance.listCart.length; // Set a new unique ID for the new product
       res.data.quantity = 1; // Set the quantity for the new product
       cartInstance.listCart.push(res.data); // Add the product to the cart list
       basePrice.push(res.data.price);
@@ -154,7 +152,7 @@ function calculateTotalPrice(cart) {
 
   for (var i = 0; i < cart.length; i++) {
     var product = cart[i];
-    totalPrice += product.price; // Tính tổng giá trị dựa vào giá của sản phẩm và số lượng
+    totalPrice += product.price; // Calculate the total value based on the product price and quantity
   }
 
   console.log(totalPrice);
@@ -162,7 +160,7 @@ function calculateTotalPrice(cart) {
   return totalPrice;
 }
 
-// Gọi hàm và cập nhật tổng giá trị trong giao diện người dùng
+// Call the function and update the total price in the user interface
 function updateTotalPrice() {
   var totalSpan = getEle("total-price");
   var total = calculateTotalPrice(cartInstance.listCart);
@@ -174,50 +172,33 @@ function increaseQuantityInCart(id) {
   var qty = getEle("qty-input-" + id);
   var price = getEle("price-span-" + id);
 
-
   cartInstance.listCart[id].price = basePrice[id] * cartInstance.listCart[id].quantity;
-  // price.innerHTML = newprice
-  // console.log(newprice);
   price.innerHTML = cartInstance.listCart[id].price;
   qty.innerHTML = cartInstance.listCart[id].quantity;
-  (cartInstance.listCart, id);
   renderCartList(cartInstance.listCart);
   updateTotalPrice();
-  setLocalStorage(); // Update local storage
+  setLocalStorage(); 
 }
 
-// function increaseQuantityInCart(id) {
-//   var priceSpan = getEle("price-span-" +id);
-//   var qtyInput = getEle("qty-input-1");
-//   cartInstance.listCart.forEach((cartItem, index) => {
-//     if(cartItem.id === index) {
-//       cartInstance.listCart[index].quantity += 1;
-//       qtyInput.value = cartInstance.listCart[index].quantity;
-//       var basePrice = cartInstance.listCart[index].price;
-//       var newPrice = calculatePrice(basePrice, cartInstance.listCart[index].quantity)
-//       console.log(cartInstance.listCart[index]);
-//       priceSpan.innerHTML = newPrice
-//     }
-//   })
-
-//   console.log(cartInstance.listCart);
-//   setLocalStorage()
-// }
-function descreaseQuantityInCart(id) {
+function decreaseQuantityInCart(id) {
   var price = getEle("price-span-" + id);
-  cartInstance.listCart[id].quantity -= 1;
-  cartInstance.listCart[id].price = basePrice[id] * cartInstance.listCart[id].quantity;
-  price.innerHTML = cartInstance.listCart[id].price;
-  var qty = getEle("qty-input-" + id);
-
-  qty.innerHTML = cartInstance.listCart[id].quantity;
-  renderCartList(cartInstance.listCart);
-  updateTotalPrice();
-  setLocalStorage(); // Update local storage
+  
+  // Check if the quantity is already 1, then do not decrease further
+  if (cartInstance.listCart[id].quantity > 1) {
+    cartInstance.listCart[id].quantity -= 1;
+    cartInstance.listCart[id].price = basePrice[id] * cartInstance.listCart[id].quantity;
+    price.innerHTML = cartInstance.listCart[id].price;
+    
+    var qty = getEle("qty-input-" + id);
+    qty.innerHTML = cartInstance.listCart[id].quantity;
+    
+    renderCartList(cartInstance.listCart);
+    updateTotalPrice();
+    setLocalStorage(); 
+  }
 }
 
 function deleteProductInCart(id) {
-  // debugger
   cartInstance.deleteProductCart(id);
   basePrice.splice(id, 1);
   getEle("countCartNav").innerHTML = cartInstance.listCart.length;
@@ -255,9 +236,6 @@ $(document).ready(function ($) {
       $("#sidebar-cart-curtain").fadeIn(500);
     }
   });
-
-  // Function that adds or subtracts quantity when a
-  // plus or minus button is clicked
 });
 
 function resetCart() {
