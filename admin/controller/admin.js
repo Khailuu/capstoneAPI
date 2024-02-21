@@ -22,18 +22,38 @@ getProductList()
 
 // get data from Form
 const getDataFromForm = () => {
-    
-    let name = getElmntId('name').value
-    console.log("name: ", name);
-    let price = getElmntId('price').value
-    let screen = getElmntId('screen').value
-    let backCamera = getElmntId('backCamera').value
-    let frontCamera = getElmntId('frontCamera').value
-    let img = getElmntId('image').value
-    let desc = getElmntId('description').value
-    let type = getElmntId('type').value
+    const val = new Validation()
+    let flag = true
+    let product = null
 
-    const product = new Product(name,price,screen,backCamera,frontCamera,img,desc,type)
+    let name = getElmntId('name').value
+    flag &= val.nullCheck(name,'tbName','Name must not be null!')
+    
+    let price = getElmntId('price').value
+    flag &= val.nullCheck(price,'tbPrice','Price must not be null!') && val.patternCheck(price,/^[0-9]+$/,'tbPrice','Price must be number!')
+
+    let screen = getElmntId('screen').value
+    flag &= val.nullCheck(screen,'tbScreen','Screen must not be null!')
+
+    let backCamera = getElmntId('backCamera').value
+    flag &= val.nullCheck(backCamera,'tbBackCamera','Back CMR must not be null!')
+
+    let frontCamera = getElmntId('frontCamera').value
+    flag &= val.nullCheck(frontCamera,'tbFrontCamera','Font CMR must not be null!')
+
+    let img = getElmntId('image').value
+    flag &= val.nullCheck(img,'tbImage','Image must not be null!')
+
+    let desc = getElmntId('description').value
+
+    let type = getElmntId('type').value
+    const index = getElmntId('type').selectedIndex
+    flag &= val.checkSelect(index, 'tbType', 'Please select phone type!')
+
+    if(flag){
+        product = new Product(name,price,screen,backCamera,frontCamera,img,desc,type)
+    }
+     
 
     return product
 
@@ -81,6 +101,11 @@ getElmntId('btnThemSP').onclick = () => {
 const cancelFunct = () => {
     getElmntId('btnClose').click();
     getElmntId('formLogin').reset();
+    divs = document.getElementsByClassName('sp-thongbao');
+
+    [].slice.call( divs ).forEach(function ( div ) {
+        div.innerHTML = '';
+    });
 
 }
 
@@ -118,40 +143,78 @@ const editProduct = (id) =>{
 // Save product into mock api
 const saveProduct = () => {
     let product = getDataFromForm()
-    const promise = services.addPrd(product)
-    .then((data)=>{
-        getProductList()
-    })
-
-    .catch((error)=>{
-        console.log("error: ", error);
-    })
+    if(product){
+        const promise = services.addPrd(product)
+        .then((data)=>{
+            getProductList()
+        })
     
-    cancelFunct()
+        .catch((error)=>{
+            console.log("error: ", error);
+        })
+        
+        cancelFunct()
+    }
+    
 }
 
 // Delete Product
 const deleteProduct = (id) => {
-    const promise = services.deletePrd(id)
-    .then((data)=>{
-        getProductList()
-    })
-
-    .catch((error)=>{
-        console.log("error: ", error);
-    })
+    const flag = confirm('Are you sure to delete!')
+    if(flag){
+        const promise = services.deletePrd(id)
+        .then((data)=>{
+            getProductList()
+        })
+    
+        .catch((error)=>{
+            console.log("error: ", error);
+        })
+    }
 }
 
 // Update Product
 const updateProduct = (id) => {
     const product = getDataFromForm()
-    const promise = services.editPrd(id, product)
-    .then((data)=>{
-        getProductList()
+    if(product){
+        const promise = services.editPrd(id, product)
+        .then((data)=>{
+            getProductList()
+        })
+    
+        .catch((error)=>{
+            console.log("error: ", error);
+        })
+        cancelFunct()
+    }
+}
+
+// Search product
+getElmntId('search').onkeyup = function(){
+    var valueSearch = getElmntId('search').value
+    var valueSearchLowerCase = valueSearch.toLowerCase()
+
+    let productList
+    let productListSearch = []
+    let promise = services.getPrd()
+    
+    promise.then((data)=>{
+        productList =  data.data
+
+        // Duyệt mảng 
+        for(let i = 0; i < productList.length; i++){
+            let product = productList[i]
+            var productName = product.name.toLowerCase()
+            if(productName.indexOf(valueSearchLowerCase) !== -1){
+                productListSearch.push(product)
+            }
+        }
+        renderProductList(productListSearch)
+        
     })
 
     .catch((error)=>{
         console.log("error: ", error);
     })
-    cancelFunct()
+   
 }
