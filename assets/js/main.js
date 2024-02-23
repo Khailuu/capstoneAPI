@@ -60,20 +60,6 @@ function renderProductList(productList) {
 }
 
 // function filter
-function filterProductType() {
-  var selectedType = getEle("filter").value;
-  var filteredProducts;
-
-  if (selectedType === "all") {
-    filteredProducts = productList;
-  } else {
-    filteredProducts = productList.filter(
-      (product) => product.type.toLowerCase() === selectedType
-    );
-  }
-  // call renderProductList again to render filtered product list
-  renderProductList(filteredProducts);
-}
 
 // render cart list
 function renderCartList(productList) {
@@ -146,19 +132,7 @@ function addToCart(id) {
 }
 
 updateTotalPrice();
-
-function calculateTotalPrice(cart) {
-  var totalPrice = 0;
-
-  for (var i = 0; i < cart.length; i++) {
-    var product = cart[i];
-    totalPrice += product.price; // Calculate the total value based on the product price and quantity
-  }
-
-  console.log(totalPrice);
-  localStorage.setItem("totalPrice", totalPrice);
-  return totalPrice;
-}
+//calculator price
 
 // Call the function and update the total price in the user interface
 function updateTotalPrice() {
@@ -198,21 +172,12 @@ function decreaseQuantityInCart(id) {
   }
 }
 
-function deleteProductInCart(id) {
-  cartInstance.deleteProductCart(id);
-  basePrice.splice(id, 1);
-  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
-  if(cartInstance.listCart.length === 0){
-    getEle("countCartNav").style.display = "none";
-  }
-  getEle("countCart").innerHTML = cartInstance.listCart.length;;
-  renderCartList(cartInstance.listCart);
-  updateTotalPrice();
-  setLocalStorage();
-}
+//filterproduct
 
 // add event onchange
 getEle("filter").addEventListener("change", filterProductType);
+
+//delete product incart 
 
 getProductList();
 
@@ -238,16 +203,7 @@ $(document).ready(function ($) {
   });
 });
 
-function resetCart() {
-  basePrice = []
-  cartInstance.listCart.splice(0, cartInstance.listCart.length)
-  getEle("countCart").innerHTML = cartInstance.listCart.length;
-  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
-  getEle("countCartNav").style.display = "none";
-  getEle("total-price").innerHTML = 0;
-  renderCartList(cartInstance.listCart)
-  setLocalStorage()
-}
+//resetCart
 
 function setLocalStorage() {
   var dataCount = JSON.stringify(cartInstance.listCart.length);
