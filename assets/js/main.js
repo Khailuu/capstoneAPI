@@ -85,7 +85,7 @@ function renderCartList(productList) {
             </span>
           </span>
         </a>
-        <a href="#remove" class="remove-button"><span class="remove-icon" onclick="deleteProductInCart(${i})">X</span></a>
+        <a href="#remove" class="remove-button"><span class="remove-icon">X</span></a>
       </li>
     `;
   }
@@ -131,15 +131,11 @@ function addToCart(id) {
   return basePrice
 }
 
-updateTotalPrice();
+
 //calculator price
 
 // Call the function and update the total price in the user interface
-function updateTotalPrice() {
-  var totalSpan = getEle("total-price");
-  var total = calculateTotalPrice(cartInstance.listCart);
-  totalSpan.innerHTML = total;
-}
+
 
 function increaseQuantityInCart(id) {
   cartInstance.listCart[id].quantity += 1;
