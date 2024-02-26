@@ -171,7 +171,7 @@ function decreaseQuantityInCart(id) {
 //filterproduct
 
 // add event onchange
-getEle("filter").addEventListener("change", filterProductType);
+
 
 //delete product incart 
 
