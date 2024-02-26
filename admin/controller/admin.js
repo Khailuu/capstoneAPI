@@ -34,7 +34,7 @@ const getDataFromForm = () => {
     let name = getElmntId('name').value
     flag &= val.nullCheck(name, 'tbName', 'Name must not be null!')
 
-    let price = getElmntId('price').value
+    let price = getElmntId('price').value * 1
     flag &= val.nullCheck(price, 'tbPrice', 'Price must not be null!') && val.patternCheck(price, /^[0-9]+$/, 'tbPrice', 'Price must be number!')
 
     let screen = getElmntId('screen').value
