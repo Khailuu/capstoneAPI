@@ -12,7 +12,8 @@ function getProductList() {
   var promise = service.getPrd();
 
   promise.then((res) => {
-    productList = res.data; // Save the original product list
+    // productList = res.data; // Save the original product list
+    productList = productFilter(res.data)
     renderProductList(productList);
   });
 
@@ -85,7 +86,7 @@ function renderCartList(productList) {
             </span>
           </span>
         </a>
-        <a href="#remove" class="remove-button"><span class="remove-icon">X</span></a>
+        <a href="#remove" class="remove-button" onclick="deleteFromCart(${i})"><span class="remove-icon">X</span></a>
       </li>
     `;
   }
@@ -122,7 +123,7 @@ function addToCart(id) {
 
     renderCartList(cartInstance.listCart); // Render the updated cart list
     setLocalStorage(); // Update local storage
-    updateTotalPrice();
+    updateTotalPrice(cartInstance.listCart);
   });
 
   promise.catch((err) => {
@@ -133,7 +134,12 @@ function addToCart(id) {
 
 
 //calculator price
-
+function updateTotalPrice(listCart) {
+  let pTotal = listCart.reduce((pre, cur) => {
+    return pre + cur.price
+  }, 0)
+  getEle('total-price').innerHTML = pTotal
+}
 // Call the function and update the total price in the user interface
 
 
@@ -146,7 +152,7 @@ function increaseQuantityInCart(id) {
   price.innerHTML = cartInstance.listCart[id].price;
   qty.innerHTML = cartInstance.listCart[id].quantity;
   renderCartList(cartInstance.listCart);
-  updateTotalPrice();
+  updateTotalPrice(cartInstance.listCart);
   setLocalStorage(); 
 }
 
@@ -163,17 +169,62 @@ function decreaseQuantityInCart(id) {
     qty.innerHTML = cartInstance.listCart[id].quantity;
     
     renderCartList(cartInstance.listCart);
-    updateTotalPrice();
+    updateTotalPrice(cartInstance.listCart);
     setLocalStorage(); 
   }
 }
 
 //filterproduct
+function productFilter(prd) {
+  let filt = getEle('filter').value
+    if (filt === 'all') {
+      return prd
+    } else {
+      return prd.filter((value) => value.type == filt)
+    }
+}
 
-// add event onchange
+//clear and checkout
+function resetCart() {
+  cartInstance.listCart = []
+  getEle("countCartNav").style.display = "inline-block";
+  getEle("countCartNav").innerHTML = cartInstance.listCart.length;;
+  getEle("countCart").innerHTML = cartInstance.listCart.length;; // Update the count in the UI
+  renderCartList(cartInstance.listCart)
+}
 
+function showPaymentConfirmation() {
+  alert('Thanh toán hoàn tất!'); 
+}
+
+function checkout() {
+  // Call the function to reset the cart
+  resetCart();
+
+  // Call the function to show payment confirmation
+  showPaymentConfirmation();
+}
 
 //delete product incart 
+function deleteFromCart(id) {
+  // Remove the product from the cart
+  cartInstance.deleteProductCart(id);
+
+  // Update the count in the UI
+  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
+  if(cartInstance.listCart.length === 0){
+    getEle("countCartNav").style.display = "none";
+  }
+  getEle("countCart").innerHTML = cartInstance.listCart.length;;
+ 
+
+  // Render the updated cart list and update total price
+  
+  renderCartList(cartInstance.listCart);
+  updateTotalPrice(cartInstance.listCart);
+  // Update local storage
+  setLocalStorage();
+}
 
 getProductList();
 
@@ -227,11 +278,14 @@ function getLocalStorage() {
       getEle("countCartNav").style.display = "inline-block";
       getEle("countCartNav").innerHTML = cartInstance.listCart.length;;
       basePrice = parsePrice;
-      updateTotalPrice();
+      updateTotalPrice(cartInstance.listCart);
     }
     getEle("countCart").innerHTML = cartInstance.listCart.length;
     renderCartList(cartInstance.listCart);
   }
 }
 
+getEle('renderCart').onclick = () => renderCartList(cartInstance.listCart)
+
 getLocalStorage();
+

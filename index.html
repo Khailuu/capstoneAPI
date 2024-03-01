@@ -67,14 +67,14 @@
         </div>
         <form action="/action_page.php">
           <label for="filter" style="color: white">Filter</label>
-          <select name="cars" id="filter">
+          <select name="cars" id="filter" onchange="getProductList()">
             <option value="all">All</option>
             <option value="iphone">Iphone</option>
-            <option value="samsung">Samsung</option>
+            <option value="Samsung">Samsung</option>
           </select>
         </form>
         <div class="count">
-          <i class="fa-solid cart-button  fa-cart-shopping ml-3"></i>
+          <i id="renderCart" class="fa-solid cart-button  fa-cart-shopping ml-3"></i>
           <span id="countCartNav"></span>
         </div>
       </nav>
@@ -91,7 +91,7 @@
             </div>
           </div>
           <div class="action-buttons">
-            <a class="view-cart-button" onclick="resetCart()" href="#">Clear</a><a class="checkout-button" onclick="resetCart()" href="#">Checkout</a>
+            <a class="view-cart-button" onclick="resetCart()" href="#">Clear</a><a class="checkout-button" onclick="checkout()" href="#">Checkout</a>
           </div>
         </main>
       </aside>
