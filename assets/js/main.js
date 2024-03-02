@@ -15,6 +15,7 @@ function getProductList() {
     // productList = res.data; // Save the original product list
     productList = productFilter(res.data)
     renderProductList(productList);
+    console.log(productList)
   });
 
   promise.catch((err) => {
@@ -176,12 +177,17 @@ function decreaseQuantityInCart(id) {
 
 //filterproduct
 function productFilter(prd) {
-  let filt = getEle('filter').value
-    if (filt === 'all') {
-      return prd
-    } else {
-      return prd.filter((value) => value.type == filt)
-    }
+  let filt = getEle('filter').value.toLowerCase(); 
+  let products = prd.map(product => ({
+    ...product,
+    type: product.type.toLowerCase() 
+  }));
+
+  if (filt === 'all') {
+    return products;
+  } else {
+    return products.filter((value) => value.type === filt);
+  }
 }
 
 //clear and checkout
