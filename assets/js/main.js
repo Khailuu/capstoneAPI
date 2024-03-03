@@ -194,9 +194,11 @@ function productFilter(prd) {
 function resetCart() {
   cartInstance.listCart = []
   getEle("countCartNav").style.display = "inline-block";
-  getEle("countCartNav").innerHTML = cartInstance.listCart.length;;
-  getEle("countCart").innerHTML = cartInstance.listCart.length;; // Update the count in the UI
-  renderCartList(cartInstance.listCart)
+  getEle("countCartNav").innerHTML = cartInstance.listCart.length;
+  getEle("countCart").innerHTML = cartInstance.listCart.length; // Update the count in the UI
+  getEle('total-price').innerHTML = '';
+  renderCartList(cartInstance.listCart);
+  setLocalStorage();
 }
 
 function showPaymentConfirmation() {
