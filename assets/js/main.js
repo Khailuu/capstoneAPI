@@ -217,6 +217,7 @@ function checkout() {
 function deleteFromCart(id) {
   // Remove the product from the cart
   cartInstance.deleteProductCart(id);
+  basePrice.splice(id, 1);
 
   // Update the count in the UI
   getEle("countCartNav").innerHTML = cartInstance.listCart.length;
