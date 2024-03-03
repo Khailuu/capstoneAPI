@@ -232,7 +232,7 @@ getElmntId('search').onkeyup = function () {
 const productFilterSort = (filtCon, sortCon, productList) => {
     let arrFilter
     if (filtCon != 'all') {
-        arrFilter = productList.filter((value) => value.type == filtCon)
+        arrFilter = productList.filter((value) => value.type.toLowerCase()  == filtCon)
     } else {
         arrFilter = productList
     }
